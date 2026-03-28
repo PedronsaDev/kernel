@@ -1,0 +1,59 @@
+[
+  {
+    "file": "arch/arm/boot/startup.S",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-ffreestanding",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-Iinclude",
+      "-mcpu=cortex-a15",
+      "-mthumb",
+      "-c",
+      "arch/arm/boot/startup.S",
+      "-o",
+      "build/startup.o"
+    ],
+    "directory": "/home/pedronsa/Projects/UFSKernel/kernel",
+    "output": "build/startup.o"
+  },
+  {
+    "file": "kernel/main.c",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-ffreestanding",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-Iinclude",
+      "-mcpu=cortex-a15",
+      "-mthumb",
+      "-c",
+      "kernel/main.c",
+      "-o",
+      "build/main.o"
+    ],
+    "directory": "/home/pedronsa/Projects/UFSKernel/kernel",
+    "output": "build/main.o"
+  },
+  {
+    "file": "kernel/serial.c",
+    "arguments": [
+      "arm-none-eabi-gcc",
+      "-ffreestanding",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-Iinclude",
+      "-mcpu=cortex-a15",
+      "-mthumb",
+      "-c",
+      "kernel/serial.c",
+      "-o",
+      "build/serial.o"
+    ],
+    "directory": "/home/pedronsa/Projects/UFSKernel/kernel",
+    "output": "build/serial.o"
+  }
+]
