@@ -14,6 +14,7 @@ SECTIONS {
         KEEP(*(.text.startup))  /* o código de inicialização, */
         *(.text)                /* as seções de código, */
         *(.rodata)              /* as seções de constante. */
+        . = ALIGN(4);           /* alinha os bytes */
     }
 
     
@@ -21,10 +22,12 @@ SECTIONS {
     /* Elas armazenam as variáveis globais. */
     .data : {
         *(.data) /* Variáveis inicializadas. */
+        . = ALIGN(4);
     }
 
     .bss : {
         *(.bss)  /* Variáveis não inicializadas. */
+        . = ALIGN(4);
     }
 
     /* Pulamos ("alocamos") 16KB para a pilha usar. */
