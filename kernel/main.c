@@ -1,4 +1,4 @@
-#include <io.h>
+#include <uart.h>
 #include <serial.h>
 
 // O linker manda o contador de programa para o binário daqui.
@@ -6,17 +6,17 @@ void kmain(void) {
     serial_init();
     serial_puts("Bem-vindo ao UFSKernel!\n");
     serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
+    
+    uart_init();
+    uart_puts("Kernel Booted. Type something and I will echo it back after a delay...\n");
 
-    // Teste IO
-    io_puts("\nDigite alguma coisa: ");
-
-    char c;
     while (1) {
-        c = io_getc();
-        io_putc(c);
+        for (volatile int i = 0; i < 10000000; i++); 
 
-        if(c == '\r'){
-            io_putc('\n');
-        }
+        char c = uart_getc(); 
+        
+        uart_puts("\nI received: ");
+        uart_putc(c);
+        uart_puts("\n");
     }
 }
