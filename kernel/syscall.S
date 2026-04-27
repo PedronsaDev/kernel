@@ -1,14 +1,8 @@
 
-.equ PRINTF_CALL, 6
+.equ PRINTF_CALL, 0
 
 .text
-.global syscall
-.type syscall, %function
 
-
-syscall:
-
-    bx lr
 
 .global printf
 .type printf, %function

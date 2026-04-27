@@ -1,27 +1,14 @@
-.equ PRINTF_CALL, 6
+
 .text
-.global syscall_Handler
-.type syscall_Handler, %function
-.extern serial_puts
+.global Syscall_Table
+Syscall_Table:
+    .word printf_handler
+    .word malloc_handler
+    .word fork_handler
+    .word exec_handler
+    .word wait_handler
+    .word exit_handler
 
-
-syscall_Handler:
-    // é necessario implementar uma tabela para permitir a checagem das chamadas de sistema
-    // a checagem atual é apenas por um if por conveniência de testes e simplicidade
-
-    //modo supervisor
-    mrs r12, cpsr // O registrador cpsr é o que armazena o modo atual do processador.
-    bic r12, r12, #0x1f // Limpa seja lá o que tinha nos 5 primeiros bits.
-    orr r12, r12, #0xd3 // Coloca o valor que queremos.
-    msr cpsr, r12
-
-
-    cmp r0, #PRINTF_CALL
-    beq printf_handler
-
-    mov r0, #0
-    SUB r0,r0, #1
-    bx lr
 
 printf_handler:
 
@@ -31,6 +18,40 @@ printf_handler:
     bl serial_puts
     mov r0,#1
     pop {pc}
+
+malloc_handler:
+    
+fork_handler:
+
+exec_handler:
+
+wait_handler:
+
+exit_handler:
+
+.global syscall_Handler
+.type syscall_Handler, %function
+.extern serial_puts
+
+.align 2
+syscall_Handler:
+    // é necessario implementar uma tabela para permitir a checagem das chamadas de sistema
+    // a checagem atual é apenas por um if por conveniência de testes e simplicidade
+
+
+
+    ldr r3, =Syscall_Table
+    ldr r3, [r3,r0,LSL #2]
+    bx r3
+
+    mov r0, #0
+    SUB r0,r0, #1
+    bx lr
+
+
+
+
+
 
 
 
