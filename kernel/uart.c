@@ -1,4 +1,4 @@
-#include <uart.h>
+#include "uart.h"
 
 #define UART0_BASE 0x09000000U
 
@@ -66,7 +66,6 @@ static int uart_buffer_push(char c) {
     }
 
     return 0; // Overflow do buffer
-
 }
 
 static int uart_buffer_pop(char *ptr) {
@@ -95,7 +94,7 @@ static void uart_enable_interrupts(void) {
 }
 
 void uart_init(void) {
-
+    uart_flush();
     *UART0_CR = 0;
 
     uart_set_baud_rate();
