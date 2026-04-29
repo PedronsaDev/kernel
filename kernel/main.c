@@ -1,6 +1,6 @@
 #include <serial.h>
-#include "uart.h"
-#include "gic.h"
+
+#include "kstdio.h"
 
 // O linker manda o contador de programa para o binário daqui.
 void kmain(void) {
@@ -15,9 +15,16 @@ void kmain(void) {
     // e coloca o target na CPU 0
     gic_enable_interrupt(33);
 
-    uart_puts("UART e GIC rodando em modo manual.\n");
-    uart_puts("Digite alguma coisa. O GIC deve detectar...\n");
-
+    printf("+========PRINTF========+\n");
+    printf("Teste printf sem parametros\n");
+    printf("Teste String: %s\n", "Hello World");
+    printf("Teste Char: %c\n", 'A');
+    printf("Teste Decimal(int): %d and %d\n", 67, -451);
+    printf("Teste Hex: %x\n", 0x09000000);
+    printf("+======================+\n");
+    
+    printf("UART e GIC rodando em modo manual.\n");
+    printf("Digite alguma coisa. O GIC deve detectar...\n");
     // Precisa linkar com a vector table
     while (1) {
         if (gic_is_pending(33)) {
@@ -33,8 +40,7 @@ void kmain(void) {
 
             // Verifica se conseguimos escrever no buffer
             char c = uart_getc();
-            uart_puts("Caracter lido do buffer: ");
-            uart_putc(c);
+            printf("Caracter lido do buffer: %c", c);
             uart_puts("\n");
         }
 

@@ -1,6 +1,6 @@
 [
   {
-    "file": "kernel/gic.c",
+    "file": "kernel/main.c",
     "arguments": [
       "/usr/bin/arm-none-eabi-gcc",
       "-ffreestanding",
@@ -11,11 +11,30 @@
       "-mcpu=cortex-a15",
       "-mthumb",
       "-c",
-      "kernel/gic.c",
+      "kernel/main.c",
       "-o",
-      "build/gic.o"
+      "build/main.o"
     ],
     "directory": "/home/pedronsa/projects/ufskernel/kernel",
-    "output": "build/gic.o"
+    "output": "build/main.o"
+  },
+  {
+    "file": "kernel/printf.c",
+    "arguments": [
+      "/usr/bin/arm-none-eabi-gcc",
+      "-ffreestanding",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-Iinclude",
+      "-mcpu=cortex-a15",
+      "-mthumb",
+      "-c",
+      "kernel/printf.c",
+      "-o",
+      "build/printf.o"
+    ],
+    "directory": "/home/pedronsa/projects/ufskernel/kernel",
+    "output": "build/printf.o"
   }
 ]
