@@ -1,4 +1,5 @@
 #include "uart.h"
+#include "gic.h"
 
 #define UART0_BASE 0x09000000U
 
@@ -121,7 +122,22 @@ void uart_handler(void) {
 char uart_getc(void) {
     char c;
 
-    while (!uart_buffer_pop(&c)) {}
+    while (!uart_buffer_pop(&c)) {
+
+        //====================================================
+        // TODO: REMOVER ISSO QUANDO ADD A VECTOR TABLE FUNCIONAL
+        if (gic_is_pending(33)) {
+            uint32_t iar = gic_acknowledge_interrupt();
+
+            if ((iar & 0x3FF) == 33) {
+                uart_handler();
+            }
+
+            gic_end_interrupt(iar);
+        }
+        //=====================================================
+
+    }
 
     return c;
 }

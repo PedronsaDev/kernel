@@ -1,5 +1,21 @@
-#include "printf.h"
+#include "kstdio.h"
 #include "uart.h"
+
+void ksdtio_init(void) {
+    uart_init();
+}
+
+void kputs(const char *str) {
+    uart_puts(str);
+}
+
+void kputc(char c) {
+    uart_putc(c);
+}
+
+char kgetc(void) {
+    return uart_getc();
+}
 
 static void print_number(unsigned int num, int base, int is_signed) {
     char buffer[32];
@@ -31,7 +47,7 @@ static void print_number(unsigned int num, int base, int is_signed) {
     }
 }
 
-void printf(const char *format, ...) {
+void kprintf(const char *format, ...) {
     va_list args;
     va_start(args, format);
 
