@@ -7,7 +7,7 @@
 void ksdtio_init(void);
 
 // Output
-void printf(const char *format, ...);
+void kprintf(const char *format, ...);
 void kputs(const char *str);
 void kputc(char c);
 
