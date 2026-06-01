@@ -18,6 +18,7 @@
 /* Tamanho de cada página/bloco de memória (4 KB) */
 #define PAGE_SIZE        4096 
 
+
 // Inicializa o gerenciador a partir do end
 void pmm_init();
 
