@@ -3,22 +3,22 @@
 
  extern uint8_t __end[]; // Símbolo vindo do linker script, representa o final do kernel
 
-uint32_t *bitmap;
+Bitmap bitmap;
 
 void pmm_init() {
-    bitmap = (uint32_t *) __end; //tem que alinhar aqui
+    bitmap.map = (uint32_t *) __end; //tem que alinhar aqui
 
     uint32_t num_pages  = RAM_SIZE / PAGE_SIZE;
-    uint32_t bitmap_size = num_pages / 32;
+    bitmap.size = num_pages / 32;
     if(num_pages % 32 != 0) {
-        bitmap_size++; //Adiciona um bloco extra se não for múltiplo de 32
+        bitmap.size++; //Adiciona um bloco extra se não for múltiplo de 32
     }
  
-    for (uint32_t i = 0; i < bitmap_size; i++) {
-        bitmap[i] = 0xFFFFFFFF; //para evitar problemas de inicialização, todos os blocos são marcados como alocados inicialmente (bits setados para 1)
+    for (uint32_t i = 0; i < bitmap.size; i++) {
+        bitmap.map[i] = 0xFFFFFFFF; //para evitar problemas de inicialização, todos os blocos são marcados como alocados inicialmente (bits setados para 1)
     }
 
-    uintptr_t free_mem_start = (uintptr_t) __end + bitmap_size * sizeof(uint32_t);
+    uintptr_t free_mem_start = (uintptr_t) __end + bitmap.size * sizeof(uint32_t);
 
     for(uintptr_t addr = free_mem_start; addr < RAM_END; addr += PAGE_SIZE) {
         pmm_free_page(addr); //marca os blocos de memória livre a partir do final do kernel até o final da RAM (bits setados para 0)
@@ -34,7 +34,7 @@ void pmm_free_page(uintptr_t addr) {
 
     uint32_t mask = (1 << bit); //cria uma mascara com bit - Ex: para o bit 2, a mascara seria ...00000100, para o bit 1 seria ...00000010
     mask = ~mask; // inverte a máscara para que o bit correspondente seja 0 e os outros sejam 1 (ex ...00100 -> ...11011)
-    bitmap[idx] &= mask; // faz uma operação and pra zerar o bit e marcar o bloco como livre
+    bitmap.map[idx] &= mask; // faz uma operação and pra zerar o bit e marcar o bloco como livre
 }
 
 void pmm_alloc_page_at(uintptr_t addr) {
@@ -43,5 +43,6 @@ void pmm_alloc_page_at(uintptr_t addr) {
     uint32_t bit = page % 32;
     
     uint32_t mask = (1 << bit); //cria uma mascara com bit - Ex: para o bit 2, a mascara seria ...00000100, para o bit 1 seria ...00000010
-    bitmap[idx] |= mask; // faz uma operação de or para setar o bit da mask pra 1
+    bitmap.map[idx] |= mask; // faz uma operação de or para setar o bit da mask pra 1
 }
+

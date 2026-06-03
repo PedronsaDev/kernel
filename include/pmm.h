@@ -18,6 +18,12 @@
 /* Tamanho de cada página/bloco de memória (4 KB) */
 #define PAGE_SIZE        4096 
 
+// Struct para o bitmap
+typedef struct{
+    uint32_t *map; // Ponteiro para o array de paginas do bitmap
+    uint32_t size; // Tamanho do bitmap
+
+} Bitmap;
 
 // Inicializa o gerenciador a partir do end
 void pmm_init();
@@ -26,7 +32,6 @@ void pmm_init();
 void* pmm_alloc_block();
 
 // Libera um bloco previamente alocado
-void pmm_free_block(void* addr);
-
+void pmm_free_block(void* addr); 
 #endif
 
