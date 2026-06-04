@@ -17,7 +17,7 @@ SECTIONS {
         . = ALIGN(4);           /* alinha os bytes */
     }
 
-    
+
     /* As seções .data e .bss são Read / Write (RW). */
     /* Elas armazenam as variáveis globais. */
     .data : {
@@ -30,9 +30,11 @@ SECTIONS {
         . = ALIGN(4);
     }
 
+    . = ALIGN(8);
     /* Pulamos ("alocamos") 16KB para a pilha usar. */
     stack_bottom = .; /* Rótulo para não estourarmos a pilha. */
     . = . + 0x4000;
+    . = ALIGN(8);
     stack_top = .; /* Aqui é o rótulo usado no startup.S. */
 
     end = .;

@@ -157,7 +157,7 @@ void uart_irq_handler(void) {
 }
 
 // Le um byte da UART
-// Primeiro tenta o buffer (se interrupcoes tiverem ativadas)
+// Primeiro tenta o buffer
 // Se o buffer estiver vazio faz polling direto no hardware
 char uart_getc(void) {
   char c;
