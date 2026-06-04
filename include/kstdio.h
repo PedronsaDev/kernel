@@ -4,7 +4,7 @@
 #include <stdarg.h>
 
 // Inicializacao
-void ksdtio_init(void);
+void kstdio_init(void);
 
 // Output
 void kprintf(const char *format, ...);

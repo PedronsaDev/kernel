@@ -1,7 +1,7 @@
 #include "kstdio.h"
 #include "uart.h"
 
-void ksdtio_init(void) {
+void kstdio_init(void) {
     uart_init();
 }
 
@@ -17,15 +17,15 @@ char kgetc(void) {
     return uart_getc();
 }
 
-static void print_number(unsigned int num, int base, int is_signed) {
+int kstdio_has_data(void) {
+    return uart_has_data();
+}
+
+// Printa um inteiro sem sinal
+// Usa um buffer para inverter os digitos no final
+static void print_uint_base(unsigned long long num, int base) {
     char buffer[32];
     int i = 0;
-
-    // Numeros negativos
-    if (is_signed && (int)num < 0) {
-        uart_putc('-');
-        num = (unsigned int)(-(int)num);
-    }
 
     if (num == 0) {
         uart_putc('0');
@@ -33,13 +33,13 @@ static void print_number(unsigned int num, int base, int is_signed) {
     }
 
     while (num > 0) {
-        int remainder = num % base;
+        unsigned long long remainder = num % (unsigned long long)base;
         if (remainder < 10) {
-            buffer[i++] = remainder + '0';
+            buffer[i++] = (char)('0' + remainder);
         } else {
-            buffer[i++] = remainder - 10 + 'a';
+            buffer[i++] = (char)('a' + (remainder - 10));
         }
-        num /= base;
+        num /= (unsigned long long)base;
     }
 
     while (i > 0) {
@@ -47,6 +47,88 @@ static void print_number(unsigned int num, int base, int is_signed) {
     }
 }
 
+// Printa inteiro com sinal em base qualquer
+static void print_int_base(long long num, int base) {
+    if (num < 0) {
+        uart_putc('-');
+        num = -num;
+    }
+
+    print_uint_base((unsigned long long)num, base);
+}
+
+// Calcula 10^precision de forma simples (usado para parte fracionaria)
+static unsigned long long pow10_u64(int precision) {
+    unsigned long long result = 1;
+
+    while (precision-- > 0) {
+        result *= 10ull;
+    }
+
+    return result;
+}
+
+// Printa double no formato decimal simples
+// Tem precisao fixa (%.Nf). Nao usa notacao cientifica
+static void print_float(double value, int precision) {
+    // Precisao padrao do printf de 6 casas
+    if (precision < 0) {
+        precision = 6;
+    }
+
+    // Evita estourar o buffer e simplifica o arredondamento
+    // Acho que da pra ser 18 mas deu certo com 17
+    if (precision > 17) {
+        precision = 17;
+    }
+
+    // NaN eh o unico numero que nao eh igual a ele mesmo
+    if (value != value) {
+        uart_puts("nan");
+        return;
+    }
+
+    // Sinal
+    if (value < 0.0) {
+        uart_putc('-');
+        value = -value;
+    }
+
+    // Parte inteira e fracionaria
+    unsigned long long int_part = (unsigned long long)value;
+    double frac = value - (double)int_part;
+
+    // Converte parte fracionaria para inteiro arredondando
+    unsigned long long scale = pow10_u64(precision);
+    unsigned long long frac_part = (unsigned long long)(frac * (double)scale + 0.5);
+
+    // Se arredondamento estourar, ajusta a parte inteira
+    if (frac_part >= scale) {
+        int_part += 1;
+        frac_part = 0;
+    }
+
+    print_uint_base(int_part, 10);
+
+    if (precision > 0) {
+        char buffer[20];
+
+        uart_putc('.');
+
+        // Preenche do fim para o comeco com zeros a esquerda
+        for (int i = 0; i < precision; i++) {
+            buffer[precision - 1 - i] = (char)('0' + (frac_part % 10));
+            frac_part /= 10;
+        }
+
+        for (int i = 0; i < precision; i++) {
+            uart_putc(buffer[i]);
+        }
+    }
+}
+
+// printf simplificado
+// Suporta %c %s %d %u %x %f %% e precisao em %f
 void kprintf(const char *format, ...) {
     va_list args;
     va_start(args, format);
@@ -54,6 +136,33 @@ void kprintf(const char *format, ...) {
     while (*format != '\0') {
         if (*format == '%') {
             format++;
+
+            // Suporte simples a precisao (%.Nf) igual o printf nativo
+            int precision = -1;
+
+            int length_l = 0;
+
+            if (*format == 'l') {
+                length_l = 1;
+                format++;
+            }
+
+            if (*format == '.') {
+                format++;
+                precision = 0;
+
+                while (*format >= '0' && *format <= '9') {
+                    precision = (precision * 10) + (*format - '0');
+                    format++;
+                }
+            }
+
+            if (*format == 'l') {
+                length_l = 1;
+                format++;
+            }
+
+            (void)length_l;
 
             switch (*format) {
                 case 'c':{
@@ -72,18 +181,23 @@ void kprintf(const char *format, ...) {
                 }
                 case 'd': {
                     int n = va_arg(args, int);
-                    print_number((unsigned)n, 10, 1);
+                    print_int_base(n, 10);
                     break;
                 }
                 case 'u': {
                     unsigned int u = va_arg(args, unsigned int);
-                    print_number(u, 10, 0);
+                    print_uint_base(u, 10);
                     break;
                 }
                 case 'x': {
                     unsigned int x = va_arg(args, unsigned int);
                     uart_puts("0x");
-                    print_number(x, 16, 0);
+                    print_uint_base(x, 16);
+                    break;
+                }
+                case 'f': {
+                    double f = va_arg(args, double);
+                    print_float(f, precision);
                     break;
                 }
                 case '%': {
