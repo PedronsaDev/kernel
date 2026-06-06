@@ -6,6 +6,7 @@
 .global setup_core_for_irq
 
 .extern serial_puts 
+
 .type irq_handler, %function
 .type setup_core_for_irq, %function
 
@@ -24,7 +25,7 @@ irq_handler:
     sub lr, lr, #4
     stmfd sp!, {r0-r12, lr}
 
-    bl timer_interrupt_c
+    bl irq_dispatcher_c
 
     ldmfd sp!, {r0-r12, pc}^
 

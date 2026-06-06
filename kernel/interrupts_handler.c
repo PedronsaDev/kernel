@@ -1,33 +1,29 @@
 #include <interrupts_handler.h>
-#include <serial.h>
+
+static isr_t interrupt_handlers[MAX_INTERRUPTS] = {0};
+
+void register_interrupt_handler(uint32_t irq, isr_t handler) {
+  if (irq < MAX_INTERRUPTS) {
+    interrupt_handlers[irq] = handler;
+  }
+}
 
 void init_gic(void) {
-    GICD_CTLR = 1; 
-    GICC_CTLR = 1; 
-    GICC_PMR = 0xFF; 
-    GICD_ISENABLER0 = (1 << TIMER_IRQ); 
+  GICD_CTLR = 1;
+  GICC_CTLR = 1;
+  GICC_PMR = 0xFF;
+  GICD_ISENABLER0 = (1 << TIMER_IRQ);
 }
 
-void init_timer(void) {
-    uint32_t timer_ticks = 96000000; // tempo totalmente aleatorio da minha cabeça, mudar dps
-    __asm__ volatile ("mcr p15, 0, %0, c14, c2, 0" :: "r" (timer_ticks));
-    uint32_t ctl = 1;
-    __asm__ volatile ("mcr p15, 0, %0, c14, c2, 1" :: "r" (ctl));
-}
+void enable_cpu_interrupts(void) { __asm__ volatile("cpsie i"); }
 
-void enable_cpu_interrupts(void) {
-    __asm__ volatile ("cpsie i"); // Destrava a CPU para ouvir o GIC
-}
+// Antiga timer_interrupt_c() que agora é genérica
+void irq_dispatcher_c(void) {
+  uint32_t irq_id = GICC_IAR & 0x3FF;
 
-void timer_interrupt_c(void) {
-    uint32_t irq_id = GICC_IAR; 
+  if (irq_id < MAX_INTERRUPTS && interrupt_handlers[irq_id] != 0) {
+    interrupt_handlers[irq_id](); // Aciona o timer.c (ou outro módulo)
+  }
 
-    if (irq_id == TIMER_IRQ) {
-        serial_puts(">>> TICK DO TIMER! <<<\n");
-        // Recarrega o timer para ele continuar tocando
-        uint32_t timer_ticks = 96000000;
-        __asm__ volatile ("mcr p15, 0, %0, c14, c2, 0" :: "r" (timer_ticks));
-    }
-
-    GICC_EOIR = irq_id; // Libera o GIC para a próxima
+  GICC_EOIR = irq_id;
 }

@@ -8,3 +8,7 @@ build/
 # executável final
 *.elf
 *.img
+
+# helper para o lsp
+*.json
+.ccls-cache/
