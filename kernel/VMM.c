@@ -1,4 +1,5 @@
 #include "VMM.h"
+#include <stddef.h>
 
 // O diretório de páginas principal do próprio kernel
 static page_directory_t *kernel_directory = NULL;
