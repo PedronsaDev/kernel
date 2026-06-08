@@ -1,12 +1,23 @@
 #include <serial.h>
 #include <syscall.h>
+#include <interrupts_handler.h>
 // O linker manda o contador de programa para o binário daqui.
 void kmain(void) {
 
-    const char *c = "Bem-vindo ao UFSKernel!\n";
+    setup_core_for_irq();
+    const char *c = "Testrando alterações\n";
     serial_init();
-    int a = printf(c,15);
-    serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
+    int teste = 15;
+    teste = printf(c);
+    if(teste == 1)
+        serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
+
+    while(teste < 100000000)
+    {
+        teste++;
+    }
+
+    abort();
 
     return;
 }

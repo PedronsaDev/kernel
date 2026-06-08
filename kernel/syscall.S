@@ -1,6 +1,7 @@
-
+// adicionar aq codigo da chamada de sistema, 
+//a ordem deve ser igual a da tabela
 .equ PRINTF_CALL, 0
-
+.equ ABORT_CALL, 1
 .text
 
 
@@ -8,13 +9,42 @@
 .type printf, %function
 
 printf:
-    mov r2, r0 // swap de registradores, r0 -> r1, r1 -> r2
-    mov r3, r1 // isso acontece para colocarmos o codigo do printf (ou qualquer outra chamada ) no r0, por questões de padronização
-
+    push {lr}
+    mov r1, r0 
     mov r0, #PRINTF_CALL
-    mov r1, r2
-    mov r2, r3
+    SVC #0
+    mov r0, #0
+    pop {pc} 
 
-    b syscall_Handler // Tail call optimization
+.global abort
+.type abort, %function
+abort:
+    push {lr}
+    mov r0, #ABORT_CALL
+    SVC #0
+    mov r0, #1
+    pop {pc} 
+
+/*
+
+exemplo:
+    push {lr} guardar o endereço da chamada
+
+    swap de registradores para organizar parametros
+
+    mov r0, #CHAMADA //r0 é definido como registrador com o codigo da chamada,
+                     //e o resto do sistema so funciona seguindo esse padrão
+
+    SVC #0 // É a instrução trap, 
+           // necessária para ir ao modo supervisor e executar qualquer chamada
+
+    mov r0, #valor // retorno da função, se houver
+    
+ */
+
+
+
+    
+
 
     

@@ -1,9 +1,9 @@
-#define PRINTF_CALL 0
-#define MALLOC_CALL 1
-#define FORK_CALL 2
-#define EXEC_CALL 3
-#define WAIT_CALL 4
-#define EXIT_CALL 5
+/*
+Serve apenas como definição das funções que fazem chamadas de sistema,
+permite o acesso delas a partir de código C.
+Ao criar uma nova, definir aqui corretamente seus parâmetros e retorno
+*/
 
 
-int printf(const char *s, int sizeBuffer);
+int printf(const char *s);
+int abort();
