@@ -111,7 +111,7 @@ void shell_run(void) {
       kprintf("Teste String: %s\n", "Hello World");
       kprintf("Teste Char: %c\n", 'A');
       kprintf("Teste Decimal(int): %d, %d\n", 67, -451);
-      kprintf("Test float %.2f\n", 3.14f);
+      kprintf("Teste float %.2f\n", 3.14f);
       kprintf("Teste Hex: %x\n", 0x09000000);
       kprintf("+======================+\n");
     } else {
