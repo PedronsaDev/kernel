@@ -25,6 +25,7 @@ printf_handler:
     mov r0,r1
     push {lr}
     bl serial_puts
+    mov r0, #10
     pop {pc}
 
 abort_handler:

@@ -13,7 +13,6 @@ printf:
     mov r1, r0 
     mov r0, #PRINTF_CALL
     SVC #0
-    mov r0, #0
     pop {pc} 
 
 .global abort
@@ -22,7 +21,6 @@ abort:
     push {lr}
     mov r0, #ABORT_CALL
     SVC #0
-    mov r0, #1
     pop {pc} 
 
 /*
@@ -38,7 +36,7 @@ exemplo:
     SVC #0 // É a instrução trap, 
            // necessária para ir ao modo supervisor e executar qualquer chamada
 
-    mov r0, #valor // retorno da função, se houver
+    pop {pc} retorna para quem chamou
     
  */
 

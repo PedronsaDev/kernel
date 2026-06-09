@@ -35,7 +35,7 @@ setup_core_for_irq:
 
 // no arquivo real precisa ter esta função
 svc_handler:
-    STMFD sp!, {r0-r12, lr}  // salva o estado de usuario
+    STMFD sp!, {r1-r12, lr}  // salva o estado de usuario
     bl syscall_Handler       //chama o handler
-    LDMFD sp!, {r0-r12, pc}^ // retorna para o estado de usuario
+    LDMFD sp!, {r1-r12, pc}^ // retorna para o estado de usuario
                              // após executar a chamada          
