@@ -12,7 +12,8 @@ void kputs(const char *str);
 void kputc(char c);
 
 // Input
-char kgetc(void);
+int kgetc(void);
+void kgets(char *buf, int max_len);
 
 // Utilidade
 int kstdio_has_data(void);

@@ -2,7 +2,6 @@
 #include "kstdio.h"
 
 // Implementacao basica do strcomp
-// TODO: Criar uma biblioteca pra strings
 int strcmp(const char *s1, const char *s2) {
   while (*s1 && (*s1 == *s2)) {
     s1++;
@@ -16,53 +15,24 @@ int strcmp(const char *s1, const char *s2) {
 
 void shell_run(void) {
   char cmd_buffer[CMD_BUFFER_SIZE];
-  int cmd_index = 0;
 
   kprintf("\n=== UFSKernel Shell ===\n");
-  kprintf("Digite \'help\'\n");
+  kprintf("Digite 'help'\n");
 
   while (1) {
     kprintf("$ ");
-    cmd_index = 0;
 
-    while (1) {
-      char c = kgetc();
+    kgets(cmd_buffer, CMD_BUFFER_SIZE);
 
-      // Enviar o comando qnd aperta o enter
-      if (c == '\r' || c == '\n') {
-        kprintf("\n");
-        cmd_buffer[cmd_index] = '\0';
-        break;
-      }
-      // Apagar qnd aperta Backspace our del
-      else if (c == '\b' || c == 0x7F) {
-        if (cmd_index > 0) {
-          cmd_index--;
-
-          kputc('\b');
-          kputc(' ');
-          kputc('\b');
-        }
-      }
-      // Caracteres printaveis normais
-      else if (c >= 32 && c <= 126) {
-        if (cmd_index < CMD_BUFFER_SIZE - 1) {
-          cmd_buffer[cmd_index++] = c;
-          kputc(c);
-        }
-      }
-    }
-
-    // === Processamento de comando ===
-    // Ignora comand vazio
-    if (cmd_index == 0) {
+    // Ignora comando vazio
+    if (cmd_buffer[0] == '\0') {
       continue;
     }
 
+    // === Tokenizador e Parser (continua o mesmo) ===
     char *argv[MAX_ARGS];
     int argc = 0;
     char *ptr = cmd_buffer;
-
     // Tokenizador
     while (*ptr != '\0') {
       // Separa por espacos

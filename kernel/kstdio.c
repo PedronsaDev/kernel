@@ -7,14 +7,39 @@ void kputs(const char *str) { uart_puts(str); }
 
 void kputc(char c) { uart_putc(c); }
 
-char kgetc(void) { return uart_getc(); }
+int kgetc(void) { return (int)uart_getc(); }
+
+void kgets(char *buf, int max_len) {
+  int index = 0;
+  while (1) {
+    char c = kgetc();
+
+    if (c == '\r' || c == '\n') {
+      kprintf("\n");
+      buf[index] = '\0';
+      break;
+    } else if (c == '\b' || c == 0x7F) {
+      if (index > 0) {
+        index--;
+        kputc('\b');
+        kputc(' ');
+        kputc('\b');
+      }
+    } else if (c >= 32 && c <= 126) {
+      if (index < max_len - 1) {
+        buf[index++] = c;
+        kputc(c);
+      }
+    }
+  }
+}
 
 int kstdio_has_data(void) { return uart_has_data(); }
 
 // Printa um inteiro sem sinal
 // Usa um buffer para inverter os digitos no final
 static void print_uint_base(unsigned long long num, int base) {
-  char buffer[32];
+  char buffer[65];
   int i = 0;
 
   if (num == 0) {
@@ -131,13 +156,6 @@ void kprintf(const char *format, ...) {
       // Suporte simples a precisao (%.Nf) igual o printf nativo
       int precision = -1;
 
-      int length_l = 0;
-
-      if (*format == 'l') {
-        length_l = 1;
-        format++;
-      }
-
       if (*format == '.') {
         format++;
         precision = 0;
@@ -148,12 +166,11 @@ void kprintf(const char *format, ...) {
         }
       }
 
+      int length_mod = 0;
       if (*format == 'l') {
-        length_l = 1;
+        length_mod++;
         format++;
       }
-
-      (void)length_l;
 
       switch (*format) {
       case 'c': {
@@ -171,12 +188,26 @@ void kprintf(const char *format, ...) {
         break;
       }
       case 'd': {
-        int n = va_arg(args, int);
+        long long n;
+        if (length_mod >= 2) {
+          n = va_arg(args, long long);
+        } else if (length_mod == 1) {
+          n = va_arg(args, long);
+        } else {
+          n = va_arg(args, int); // Default 32-bit
+        }
         print_int_base(n, 10);
         break;
       }
       case 'u': {
-        unsigned int u = va_arg(args, unsigned int);
+        unsigned long long u;
+        if (length_mod >= 2) {
+          u = va_arg(args, unsigned long long);
+        } else if (length_mod == 1) {
+          u = va_arg(args, unsigned long);
+        } else {
+          u = va_arg(args, unsigned int);
+        }
         print_uint_base(u, 10);
         break;
       }
