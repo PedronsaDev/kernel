@@ -2,15 +2,14 @@
 #include <stddef.h>
 
 // O diretório de páginas principal do próprio kernel
+// A arquitetura define 16kb então fazer a alocação estática é mais fácil
 static page_directory_t kernel_directory_static __attribute__((aligned(16384)));
 
 void vmm_init(void) {
-    // 1. Aloca memória física para o diretório de páginas do kernel usando o seu PMM
-    // Nota: Como o pmm_alloc_block retorna 4KB e o L1 precisa de 16KB,precisará de pmm_alloc_block, uma função no PMM que aloca blocos contíguos ou espaço estático reservado.
+   
     page_directory_t *kernel_directory = &kernel_directory_static;
-    // Zera o diretório para garantir que nenhum mapeamento lixo exista
     if(kernel_directory == NULL) {
-        serial_puts("[ERROR] Falha ao alocar diretório de páginas para o kernel!\n");
+        serial_puts("Falha ao alocar diretório de páginas para o kernel!\n");
         while(1); 
     }
 
@@ -43,28 +42,21 @@ int vmm_map_page(page_directory_t *dir, uintptr_t virtual_addr, uintptr_t physic
             clean_ptr[i] = 0;
         }
 
-        // Configura a entrada L1: O ARM exige o padrão 0x1 nos bits inferiores para Coarse Page Table
+        // Configura a entrada L1: O ARM exige o padrão 0x1 nos bits inferiores para Page Table
         dir->entries[pd_idx] = ((uintptr_t)new_pt_phys) | 0x1; 
     }
 
     // Pega o endereço físico da tabela L2
     uintptr_t pt_phys = dir->entries[pd_idx] & 0xFFFFFC00;
-
-    // CORREÇÃO CRÍTICA: Se a MMU já estiver ativa, você DEVE converter pt_phys 
-    // para o seu endereço virtual equivalente antes de usar como ponteiro!
-    // Se ainda estiver na inicialização (Identity Mapping), pode usar direto:
     pt = (page_table_t *)pt_phys; 
 
     // Mapeia o endereço físico no L2
-    // No ARM, uma Small Page (4KB) usa tipicamente o bit 1 ativo (0x2) como flag de presente
+    // No ARM, uma Small Page (4KB) usa o bit 1 ativo (0x2) como flag de presente
     pt->entries[pt_idx] = (physical_addr & 0xFFFFF000) | flags | 0x2;
-
-    // Invalida a entrada modificada no TLB para que a CPU veja a alteração imediatamente
-    // asm volatile("MCR p15, 0, %0, c8, c7, 1" : : "r"(virtual_addr)); // Invalida TLB por MVA
 
     return 0;
 }
-
+ 
 void vmm_switch_directory(page_directory_t *dir) {
     //Pega o endereço físico do diretório
     uint32_t phys_addr = (uint32_t)dir;
