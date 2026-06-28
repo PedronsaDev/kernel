@@ -7,6 +7,8 @@ extern page_directory_t *vmm_get_kernel_directory(void);
 
 void kmain(void) {
     serial_init();
+
+    // TESTES DO GERENCIADOR DE MEMÓRIA //
     //Testando o Gerenciador Físico (PMM)
     serial_puts("Inicializando PMM\n");
     pmm_init(); 
@@ -18,7 +20,6 @@ void kmain(void) {
     serial_puts("Rodando em modo de Memoria Virtual.\n");
     //Testando o Mapeamento de Página
     serial_puts("\n[3] Testando mapeamento (Virtual -> Fisico)...\n");
-
     // Pegamos o diretório do kernel e escolhemos um endereço virtual qualquer
     page_directory_t *kernel_dir = vmm_get_kernel_directory();
     uintptr_t virtual_addr = 0xCAFE0000; 
@@ -35,9 +36,10 @@ void kmain(void) {
     mem_teste[6] = '!';
     mem_teste[7] = '\n';
     mem_teste[8] = '\0';
-
     serial_puts("Resultado da leitura: ");
     serial_puts((const char *)mem_teste);
+    // FIM DOS TESTES DO GERENCIADOR DE MEMORIA //
+    
     // Loop eterno
     while(1) {
     }
