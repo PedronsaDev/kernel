@@ -1,4 +1,6 @@
-#include "serial.h"
+#include <serial.h>
+#include <syscall.h>
+#include <interrupts_handler.h>
 #include "types.h"
 #include "pmm.h"
 #include "VMM.h"
@@ -6,6 +8,8 @@
 extern page_directory_t *vmm_get_kernel_directory(void);
 
 void kmain(void) {
+    setup_core_for_irq();
+    const char *c = "Testando alterações\n";
     serial_init();
 
     // TESTES DO GERENCIADOR DE MEMÓRIA //
@@ -40,7 +44,17 @@ void kmain(void) {
     serial_puts((const char *)mem_teste);
     // FIM DOS TESTES DO GERENCIADOR DE MEMORIA //
     
-    // Loop eterno
-    while(1) {
+    int teste = 15;
+    teste = printf(c);
+    if(teste == 10)
+        serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
+
+    while(teste < 100000000)
+    {
+        teste++;
     }
+
+    abort();
+
+    return;
 }
