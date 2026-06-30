@@ -4,9 +4,14 @@
 static isr_t interrupt_handlers[MAX_INTERRUPTS] = {0};
 
 int register_interrupt_handler(uint32_t irq, isr_t handler) {
+
   if (irq < MAX_INTERRUPTS) {
-    interrupt_handlers[irq] = handler;
-    return 0;
+    if (interrupt_handlers[irq] ==
+        0) { // se ja tiver handler registrado, rejeita e retorna erro (-2)
+      interrupt_handlers[irq] = handler;
+      return 0;
+    } else
+      return -2;
   }
   return -1; // erro
 }
