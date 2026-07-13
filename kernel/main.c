@@ -1,6 +1,7 @@
 #include <serial.h>
 #include <syscall.h>
 #include <interrupts_handler.h>
+#include <timer.h>
 #include "types.h"
 #include "pmm.h"
 #include "VMM.h"
@@ -11,6 +12,13 @@ void kmain(void) {
     setup_core_for_irq();
     const char *c = "Testando alterações\n";
     serial_init();
+    // Inicialização do GIC e interrupção por timer
+    serial_puts("Configurando GIC e Timer...\n");
+    init_gic();
+    init_timer();
+
+    serial_puts("Ligando interrupções...\n");
+    enable_cpu_interrupts();
 
     // TESTES DO GERENCIADOR DE MEMÓRIA //
     //Testando o Gerenciador Físico (PMM)
