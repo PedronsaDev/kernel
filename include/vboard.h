@@ -1,7 +1,7 @@
 #ifndef VBOARD_H
 #define VBOARD_H
 
-typedef unsigned int uint32_t;
+#include "types.h"
 
 /* Mapeamento de memoria */
 
