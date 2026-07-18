@@ -5,12 +5,13 @@
 #include "types.h"
 #include "pmm.h"
 #include "VMM.h"
+#include <process.h>
+#include <scheduler.h>
 
 extern page_directory_t *vmm_get_kernel_directory(void);
 
 void kmain(void) {
     setup_core_for_irq();
-    const char *c = "Testando alterações\n";
     serial_init();
     // Inicialização do GIC e interrupção por timer
     serial_puts("Configurando GIC e Timer...\n");
@@ -52,15 +53,9 @@ void kmain(void) {
     serial_puts((const char *)mem_teste);
     // FIM DOS TESTES DO GERENCIADOR DE MEMORIA //
     
-    int teste = 15;
-    teste = printf(c);
-    if(teste == 10)
-        serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
+    serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
 
-    while(teste < 100000000)
-    {
-        teste++;
-    }
+    first_process(arqinicio);
 
     abort();
 
