@@ -3,6 +3,8 @@
 
 static isr_t interrupt_handlers[MAX_INTERRUPTS] = {0};
 
+uint32_t current_irq;
+
 int register_interrupt_handler(uint32_t irq, isr_t handler) {
 
   if (irq < MAX_INTERRUPTS) {
@@ -66,10 +68,16 @@ void enable_cpu_interrupts(void) { __asm__ volatile("cpsie i"); }
 
 void irq_dispatcher_c(void) {
   uint32_t irq_id = GICC_IAR & 0x3FF;
+  current_irq = irq_id;
 
   if (irq_id < MAX_INTERRUPTS && interrupt_handlers[irq_id] != 0) {
     interrupt_handlers[irq_id]();
   }
 
   GICC_EOIR = irq_id;
+}
+
+
+void irq_end_current(void){
+    GICC_EOIR = current_irq;
 }

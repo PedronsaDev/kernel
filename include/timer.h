@@ -4,7 +4,7 @@
 #include "types.h"
 
 // frequencia das interrupcoes (Hz)
-#define SYSTEM_HZ 10
+#define SYSTEM_HZ 1
 
 // funcao publica de inicializacao
 void init_timer(void);
