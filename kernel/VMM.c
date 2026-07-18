@@ -1,5 +1,6 @@
 #include "VMM.h"
 #include <stddef.h>
+#include "vboard.h"
 
 // O diretório de páginas principal do próprio kernel
 // A arquitetura define 16kb então fazer a alocação estática é mais fácil
@@ -17,7 +18,10 @@ void vmm_init(void) {
     }
     //Identity Mapping (Mapear Virtual == Físico) para regiões críticas, impede falha de execução logo após ativar a memória virtual
     vmm_map_page(kernel_directory, UART0_ADDRESS, UART0_ADDRESS, VMM_PAGE_PRESENT | VMM_PAGE_WRITABLE | VMM_PAGE_NOCACHE);
-    
+    vmm_map_page(kernel_directory, GICD_BASE, GICD_BASE, VMM_PAGE_PRESENT | VMM_PAGE_WRITABLE | VMM_PAGE_NOCACHE);
+    vmm_map_page(kernel_directory, GICC_BASE, GICC_BASE, VMM_PAGE_PRESENT | VMM_PAGE_WRITABLE | VMM_PAGE_NOCACHE);
+
+
     //Mapeando a RAM onde o kernel reside
     for (uintptr_t addr = RAM_START; addr < RAM_END; addr += PAGE_SIZE) {
         vmm_map_page(kernel_directory, addr, addr, VMM_PAGE_PRESENT | VMM_PAGE_WRITABLE);

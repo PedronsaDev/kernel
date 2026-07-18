@@ -30,10 +30,10 @@ enum process_blocks {WAIT_SLEEP, WAIT_FILE};
 
 // ***constantes e variaveis globais
 
-#define MAX_PROCESS_COUNT 64
+#define MAX_PROCESS_COUNT 4
 
-#define SIZE_16KB  (16 * 1024)
-#define SIZE_1MB   (1024 * 1024)
+#define SIZE_16KB (16 * 1024)
+#define PROCESS_SIZE (256 * 1024)
 
 #define KSTACK_SIZE 16384
 
