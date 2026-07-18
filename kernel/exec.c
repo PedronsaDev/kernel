@@ -59,7 +59,7 @@ void sys_exec(struct arquivo* arquivo) {
 
     // & ~1 significa "zerar o bit menos significativo"
     unsigned int entry_point = (unsigned int) p->mem + ((((unsigned int)arquivo->start) & ~1U) - 0x40000000);     
-    unsigned int usrstack_top = (unsigned int) (p->mem + SIZE_1MB); 
+    unsigned int usrstack_top = (unsigned int) (p->mem + PROCESS_SIZE); 
 
     p->tf = (struct trapframe*)((unsigned)p->kstack + SIZE_16KB - sizeof(struct trapframe));
 

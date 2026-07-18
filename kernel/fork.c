@@ -13,9 +13,9 @@
 // inserir o processo no bloco de processos ou inserir em uma fila do escalonador
 
 // sem malloc temos memoria estatica:
-struct process structProcessos[MAX_PROCESS_COUNT];   // 64 structs de processos
-char memProcessos[MAX_PROCESS_COUNT][SIZE_1MB];       // 64 espacos de memoria de 1MB
-char kstackProcessos[MAX_PROCESS_COUNT][SIZE_16KB];      // 64 pilhas de kernel de 16KB
+struct process structProcessos[MAX_PROCESS_COUNT];
+char memProcessos[MAX_PROCESS_COUNT][PROCESS_SIZE];
+char kstackProcessos[MAX_PROCESS_COUNT][SIZE_16KB];
 
 // funcao de retorno para processos recém clonados
 extern void irq_return(void);
@@ -98,7 +98,7 @@ void first_process(struct arquivo arquivo){
     pcb_insert(0, newprocess_block_node);
     
     current = newprocess;
-    unsigned int usrstack_top = (unsigned int) (current->mem + SIZE_1MB);
+    unsigned int usrstack_top = (unsigned int) (current->mem + PROCESS_SIZE);
     current->tf = (struct trapframe*)((unsigned)current->kstack + SIZE_16KB - sizeof(struct trapframe));
     current->tf->sp_usr = usrstack_top;
 
