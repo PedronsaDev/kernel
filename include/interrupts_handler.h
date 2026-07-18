@@ -20,4 +20,7 @@ void gic_disable_interrupt(uint32_t irq);
 // Chamada pelo assembly
 void irq_dispatcher_c(void);
 
+// pro fork_return
+void irq_end_current(void);
+
 #endif

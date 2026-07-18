@@ -2,6 +2,7 @@
 #include <serial.h>
 #include <timer.h>
 #include <vboard.h>
+#include <scheduler.h>
 
 static uint32_t ticks_p_q = 0;
 
@@ -22,6 +23,7 @@ static void timer_callback(void) {
 
   // é aqui que o código fará a chamada para o
   // escalonador
+  pcb_elect();
 }
 
 void init_timer(void) {

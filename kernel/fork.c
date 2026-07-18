@@ -1,5 +1,6 @@
 #include <process.h>
 #include <scheduler.h>
+#include <interrupts_handler.h>
 
 
 // salvar o contexto do processo
@@ -19,7 +20,11 @@ char kstackProcessos[MAX_PROCESS_COUNT][SIZE_16KB];      // 64 pilhas de kernel 
 // funcao de retorno para processos recém clonados
 extern void irq_return(void);
 
-
+void fork_return(void){
+    irq_end_current();
+    enable_cpu_interrupts();
+    irq_return();
+}
 
 int sys_fork(){
     pid_t pid = create_pid(); // gera um pid 
@@ -62,7 +67,8 @@ int sys_fork(){
     newprocess->parent->tf->r0 = newprocess->pid;
     newprocess->tf->r0 = 0;   
 
-    newprocess->context.lr = (unsigned int)irq_return; // prepara o retorno da troca de contexto para fork return
+    newprocess->context.sp = (unsigned int)newprocess->tf;
+    newprocess->context.lr = (unsigned int)fork_return; // prepara o retorno da troca de contexto para fork return
 
     // inserir na fila de maior prioridade do escalonador
     pll_node* newprocess_block_node = pll_node_new(newprocess);

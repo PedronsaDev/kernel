@@ -51,6 +51,8 @@ void programa1();
 
 void programa2();
 
+void fork_return(void);
+
 extern int fork();
 
 extern void exec(struct arquivo* arquivo);
