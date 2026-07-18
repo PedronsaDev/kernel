@@ -8,7 +8,6 @@
 #include <process.h>
 #include <scheduler.h>
 
-
 extern page_directory_t *vmm_get_kernel_directory(void);
 
 void kmain(void) {
@@ -17,7 +16,6 @@ void kmain(void) {
     // Inicialização do GIC e interrupção por timer
     serial_puts("Configurando GIC e Timer...\n");
     init_gic();
-
     init_timer();
 
     serial_puts("Ligando interrupções...\n");
@@ -57,7 +55,6 @@ void kmain(void) {
     
     serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
 
-    serial_puts("Iniciando o primeiro processo do usuario...\n");
     first_process(arqinicio);
 
     abort();
