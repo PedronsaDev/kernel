@@ -36,36 +36,31 @@ setup_core_for_irq:
     // Backup do modo atual
     mrs r1, cpsr
 
-    // Entra no Modo IRQ para dar uma pilha a ele
+    // 1. Pilha do Modo IRQ (Desce 8 KB)
     bic r0, r1, #0x1f
     orr r0, r0, #0xd2
     msr cpsr_c, r0
+    ldr sp, =stack_top
+    sub sp, sp, #8192
 
-    // Entra no Modo Abort para dar uma pilha (0xd7)
+    // 2. Pilha do Modo Abort (Desce 16 KB)
     bic r0, r1, #0x1f
     orr r0, r0, #0xd7
     msr cpsr_c, r0
     ldr sp, =stack_top
-    sub sp, sp, #16384  // Fica abaixo da pilha de IRQ
+    sub sp, sp, #16384  
 
-    // Entra no Modo Undefined para dar uma pilha (0xdb)
+    // 3. Pilha do Modo Undefined (Desce 24 KB)
     bic r0, r1, #0x1f
     orr r0, r0, #0xdb
     msr cpsr_c, r0
     ldr sp, =stack_top
-    sub sp, sp, #24576  // Fica abaixo da pilha de Abort
+    sub sp, sp, #24576  
 
-    // Configura a pilha de interrupções
-    ldr sp, =stack_top
-    sub sp, sp, #8192
+    // Restaura o modo original e alinha
     bic sp, sp, #7
-
-    // Restaura o modo original
     msr cpsr_c, r1
-
-    // Retorna para o C
     bx lr
-
 
 
 // tratadores de erro

@@ -29,7 +29,7 @@ SECTIONS {
 
     /* Pulamos ("alocamos") 16KB para a pilha usar. */
     stack_bottom = .; /* Rótulo para não estourarmos a pilha. */
-    . = . + 0x4000;
+    . = . + 0x8000;
     stack_top = .; /* Aqui é o rótulo usado no startup.S. */
 
     end = .;
