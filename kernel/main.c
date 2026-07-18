@@ -13,7 +13,6 @@ extern page_directory_t *vmm_get_kernel_directory(void);
 
 void kmain(void) {
     setup_core_for_irq();
-    const char *c = "Testando alterações\n";
     serial_init();
     // Inicialização do GIC e interrupção por timer
     serial_puts("Configurando GIC e Timer...\n");
