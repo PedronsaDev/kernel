@@ -67,6 +67,7 @@ void shell_run(void) {
       kprintf("  clear         - Limpa a tela\n");
       kprintf("  kprintf       - Testa o kprintf\n");
       kprintf("  echo [texto]  - Repete caracteres digitados\n");
+      kprintf("  quit          - Fecha o shell\n");
     } else if (strcmp(argv[0], "clear") == 0) {
       // Codigo ANSI pra limpar a tela
       kputs("\033[2J\033[H");
@@ -84,8 +85,10 @@ void shell_run(void) {
       kprintf("Teste float %.2f\n", 3.14f);
       kprintf("Teste Hex: %x\n", 0x09000000);
       kprintf("+======================+\n");
+    } else if(strcmp(argv[0], "quit") == 0){
+        return;
     } else {
-      kprintf("Comando nao encontrado: %s\n", argv[0]);
+        kprintf("Comando nao encontrado: %s\n", argv[0]);
     }
   }
 }

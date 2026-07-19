@@ -20,17 +20,17 @@ void kmain(void) {
     serial_puts("Executando em modo ARM bare-metal no QEMU.\n");
 
     // Inicialização do GIC e interrupção por timer
-    serial_puts("Configurando GIC e Timer...\n");
+    serial_puts("Configurando GIC...\n");
     init_gic();
-    init_timer();
 
-    serial_puts("Ligando interrupções...\n");
-    enable_cpu_interrupts();
+    // Teste IO e shell
+    kstdio_init();
+    shell_run();
 
     // TESTES DO GERENCIADOR DE MEMÓRIA //
     //Testando o Gerenciador Físico (PMM)
     serial_puts("Inicializando PMM\n");
-    pmm_init(); 
+    pmm_init();
     serial_puts("Pedindo uma pagina fisica\n");
     void* phys_page = pmm_alloc_block();
     //Testando a Ativação da MMU (VMM Init)
@@ -41,7 +41,7 @@ void kmain(void) {
     serial_puts("\n[3] Testando mapeamento (Virtual -> Fisico)...\n");
     // Pegamos o diretório do kernel e escolhemos um endereço virtual qualquer
     page_directory_t *kernel_dir = vmm_get_kernel_directory();
-    uintptr_t virtual_addr = 0xCAFE0000; 
+    uintptr_t virtual_addr = 0xCAFE0000;
     vmm_map_page(kernel_dir, virtual_addr, (uintptr_t)phys_page, VMM_PAGE_PRESENT | VMM_PAGE_WRITABLE);
     serial_puts("Escrevendo e lendo do endereco virtual 0xCAFE0000\n");
     // Criamos um ponteiro para a memória virtual, onde vamos escrever e tentar ler pra ver se deu certo
@@ -59,10 +59,10 @@ void kmain(void) {
     serial_puts((const char *)mem_teste);
     // FIM DOS TESTES DO GERENCIADOR DE MEMORIA //
 
+    serial_puts("Configurando Timer...\n");
+    init_timer();
+
     first_process(arqinicio);
-  
-    // Teste IO e shell
-    kstdio_init();
 
     abort();
 

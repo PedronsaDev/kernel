@@ -1,6 +1,6 @@
 #include "uart.h"
 
-// #include "interrupts_handler.h"
+#include "interrupts_handler.h"
 
 #define UART0_BASE 0x09000000U
 
@@ -138,7 +138,7 @@ void uart_init(void) {
   // INFO: NAO IRA FUNCIONAR SEM O INTERRUPTS_HANDLER
 
   // Registra o handler no array do GIC
-  register_interrupt_handler(UART0_IRQ, uart_irq_handler);
+  register_interrupt_handler(UART_IRQ, uart_irq_handler);
 
   // Configura a interrupcao como level-sensitive
   gic_config_interrupt(UART_IRQ, 0);

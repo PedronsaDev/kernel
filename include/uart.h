@@ -1,7 +1,7 @@
 #ifndef UART_H
 #define UART_H
 
-typedef unsigned int uint32_t;
+//typedef unsigned int uint32_t;
 
 // IRQ da UART no QEMU (GIC ID 33)
 #define UART_IRQ 33u
